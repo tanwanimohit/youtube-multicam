@@ -23,7 +23,7 @@
     
         .grid-size-input, .url-input {
             display: flex;
-            max-width: 30%;
+            max-width: 40%;
             justify-content: space-evenly;
             align-items: center;
             margin-bottom: 20px;
@@ -48,6 +48,7 @@
             background-color: #6272A4;
             color: #fff;
             cursor: pointer;
+            margin-right: 10px;
         }
     
         .grid {
@@ -107,6 +108,7 @@
         <div class="grid-size-input">
             <input type="number" id="columns" value="3" min="1" placeholder="Enter number of columns">
             <button onclick="configureGridSize()">Configure Column Size</button>
+            <button onclick="resetUrls()">Reset URLs</button>
         </div>
         <div class="grid" id="videoGrid"></div>
     </div>
@@ -148,6 +150,17 @@
                 urlInput.value = '';
             } else {
                 alert('Invalid YouTube URL');
+            }
+        }
+
+        function resetUrls() {
+            // Clear the localStorage
+            localStorage.removeItem('videoUrls');
+    
+            // Remove all the videos from the grid
+            var grid = document.getElementById('videoGrid');
+            while (grid.firstChild) {
+                grid.removeChild(grid.firstChild);
             }
         }
 
