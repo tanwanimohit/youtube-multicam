@@ -84,9 +84,9 @@
         }
         .video {
             position: relative;
-            padding-bottom: 56.25%;
+            width: 100%;
+            padding-bottom: 56.25%; /* for 16:9 aspect ratio */
             height: 0;
-            overflow: hidden;
         }
         .video iframe {
             position: absolute;
@@ -94,6 +94,18 @@
             left: 0;
             width: 100%;
             height: 100%;
+        }
+    
+        .video button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            background: #FF5555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -133,12 +145,52 @@
         function addVideoToHTML(url){
             var videoContainer = document.createElement('div');
             videoContainer.classList.add('video');
+            
             var iframe = document.createElement('iframe');
             iframe.src = url;
             iframe.allow = 'autoplay; encrypted-media';
             iframe.allowFullscreen = true;
             videoContainer.appendChild(iframe);
+        
+            var removeButton = document.createElement('button');
+            removeButton.innerHTML = 'Remove';
+            removeButton.onclick = function() {
+                removeVideo(videoContainer, url);
+            };
+            videoContainer.appendChild(removeButton);
+        
             document.getElementById('videoGrid').appendChild(videoContainer);
+        }
+        
+        function getVideoId(url) {
+            console.log('URL:', url);
+            var videoId = '';
+            var regex = /(?:https?:\/\/www\.youtube\.com\/embed\/)([\w-]+)/;
+            var match = url.match(regex);
+            if (match) {
+                videoId = match[1];
+            }
+            return videoId;
+        }
+        
+        function removeVideo(videoContainer, url) {
+            var videoId = '';
+            var regex = /(?:https?:\/\/www\.youtube\.com\/embed\/)([\w-]+)/;
+            var match = url.match(regex);
+            if (match) {
+                videoId = match[1];
+            }
+            // Remove the video from the grid
+            videoContainer.parentNode.removeChild(videoContainer);
+            console.log('Removing video', videoId);
+            // Remove the video from localStorage
+            var videoUrls = JSON.parse(localStorage.getItem('videoUrls'));
+            var index = videoUrls.indexOf(videoId);
+            if (index !== -1) {
+                console.log('Removing video', videoId);
+                videoUrls.splice(index, 1);
+                localStorage.setItem('videoUrls', JSON.stringify(videoUrls));
+            }
         }
         
         function addVideo() {
