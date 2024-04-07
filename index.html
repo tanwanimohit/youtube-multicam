@@ -112,6 +112,14 @@
     </div>
 
     <script>
+        // When the page loads
+        window.onload = function() {
+            var videoUrls = JSON.parse(localStorage.getItem('videoUrls')) || [];
+            for (var i = 0; i < videoUrls.length; i++) {
+                var videoId = videoUrls[i];
+                addVideoToHTML('https://www.youtube.com/embed/' + videoId);
+            }
+        };
         function configureGridSize() {
             var columnsInput = document.getElementById('columns');
             var columns = columnsInput.value;
@@ -119,20 +127,24 @@
             var grid = document.getElementById('videoGrid');
             grid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
         }
+
+        function addVideoToHTML(url){
+            var videoContainer = document.createElement('div');
+            videoContainer.classList.add('video');
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.allow = 'autoplay; encrypted-media';
+            iframe.allowFullscreen = true;
+            videoContainer.appendChild(iframe);
+            document.getElementById('videoGrid').appendChild(videoContainer);
+        }
         
         function addVideo() {
             var urlInput = document.getElementById('url');
             var videoUrl = urlInput.value;
             var videoId = getVideoId(videoUrl);
             if (videoId) {
-                var videoContainer = document.createElement('div');
-                videoContainer.classList.add('video');
-                var iframe = document.createElement('iframe');
-                iframe.src = 'https://www.youtube.com/embed/' + videoId;
-                iframe.allow = 'autoplay; encrypted-media';
-                iframe.allowFullscreen = true;
-                videoContainer.appendChild(iframe);
-                document.getElementById('videoGrid').appendChild(videoContainer);
+                addVideoToHTML('https://www.youtube.com/embed/' + videoId);
                 urlInput.value = '';
             } else {
                 alert('Invalid YouTube URL');
@@ -145,6 +157,12 @@
             var match = url.match(regex);
             if (match) {
                 videoId = match[1];
+            }
+            if (videoId) {
+                // Store the URL in localStorage
+                var videoUrls = JSON.parse(localStorage.getItem('videoUrls')) || [];
+                videoUrls.push(videoId);
+                localStorage.setItem('videoUrls', JSON.stringify(videoUrls));
             }
             return videoId;
         }
